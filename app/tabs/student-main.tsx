@@ -13,7 +13,6 @@ interface Subject {
   name: string;
   taskCount: number;
   totalTasks: number;
-  slug: string;
 }
 
 type RootStackParamList = {
@@ -23,13 +22,14 @@ type RootStackParamList = {
 
 export default function HomePage() {
   const [notifications, setNotifications] = useState<Notification[]>([
+    { id: 1, message: "Tienes 1 tarea pendiente", subject: "Matematicas" },
   ]);
 
   const subjects: Subject[] = [
-    { id: 1, name: "Materia", taskCount: 0, totalTasks: 0, slug: "materia-1" },
-    { id: 2, name: "Materia", taskCount: 0, totalTasks: 0, slug: "materia-2" },
-    { id: 3, name: "Materia", taskCount: 0, totalTasks: 0, slug: "materia-3" },
-    { id: 4, name: "Materia", taskCount: 0, totalTasks: 0, slug: "materia-4" },
+    { id: 1, name: "Matematica", taskCount: 0, totalTasks: 4 },
+    { id: 2, name: "Fisica", taskCount: 0, totalTasks: 4 },
+    { id: 3, name: "Lenguas", taskCount: 0, totalTasks: 2 },
+    { id: 4, name: "Computacion", taskCount: 0, totalTasks: 1 },
   ];
 
   const handleDragEnd = (notificationId: number) => {
