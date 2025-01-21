@@ -1,13 +1,8 @@
 import React from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity,  } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Card } from 'react-native-paper';
 import type { Task, Subject } from '../types/task';
-
-const currentSubject: Subject = {
-  id: 'math-101',
-  name: 'Matemáticas',
-};
 
 const subjectTasks: Task[] = [
   {
@@ -36,26 +31,15 @@ const subjectTasks: Task[] = [
   },
 ];
 
-interface SubjectTasksProps {
-  subjectId: string;
-}
-
-export default function SubjectTasks({ subjectId }: SubjectTasksProps) {
+export default function SubjectTasks({}) {
+  const route = useRoute();
   const navigation = useNavigation();
   const tasks = subjectTasks;
-
+  const {subjectName} = route.params;
+  
+  console.log(subjectName);
   return (
     <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
-      <View style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'white', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, height: 56 }}>
-          <TouchableOpacity onPress={() => console.log('Go back')} style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 20, marginRight: 8 }}>{'<'}</Text>
-            <Text>Inicio</Text>
-          </TouchableOpacity>
-          <Text style={{ flex: 1, textAlign: 'center', fontWeight: '500', marginRight: 28 }}>{currentSubject.name}</Text>
-        </View>
-      </View>
-
       <ScrollView contentContainerStyle={{ padding: 16, marginBottom: 16 }}>
         {tasks.map((task) => (
           <Card key={task.id} style={{ overflow: 'hidden', marginBottom: 16 }}>
