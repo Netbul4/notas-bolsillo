@@ -73,7 +73,7 @@ export default function HomePage() {
                     <Text style={styles.bold}>{notification.subject}</Text>
                   </Text>
                 </View>
-                <TouchableOpacity onPress={() => console.log("Revisar")}>
+                <TouchableOpacity onPress={() => navigateToSubjectTasks(notification.subject)}>
                   <Text style={styles.link}>Revisar</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
