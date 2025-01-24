@@ -1,7 +1,7 @@
 export interface Task {
   id: string;
   title: string;
-  subjectId: string;
+  subject: string;
   tag: string;
   description: string;
   imageUrl: string;
