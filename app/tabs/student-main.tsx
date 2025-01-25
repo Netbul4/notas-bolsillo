@@ -7,20 +7,9 @@ import {
   Animated,
   ScrollView,
 } from "react-native";
+import type { Task, Subject } from '../types/task';
+import type { Notification } from '../types/notification';
 import { useNavigation, useRoute } from "@react-navigation/native";
-
-interface Notification {
-  id: number;
-  message: string;
-  subject: string;
-}
-
-interface Subject {
-  id: number;
-  name: string;
-  taskCount: number;
-  totalTasks: number;
-}
 
 type RootStackParamList = {
   "tabs/student-school-subject": { slug: string };
@@ -40,10 +29,10 @@ export default function HomePage() {
   ]);
 
   const subjects: Subject[] = [
-    { id: 1, name: "Matematica", taskCount: 0, totalTasks: 4 },
-    { id: 2, name: "Fisica", taskCount: 0, totalTasks: 4 },
-    { id: 3, name: "Lenguas", taskCount: 0, totalTasks: 2 },
-    { id: 4, name: "Computacion", taskCount: 0, totalTasks: 1 },
+    { id: "1", name: "Matematica", doneTasks: 0, totalTasks: 4 },
+    { id: "2", name: "Fisica", doneTasks: 0, totalTasks: 4 },
+    { id: "3", name: "Lenguas", doneTasks: 0, totalTasks: 2 },
+    { id: "4", name: "Computacion", doneTasks: 0, totalTasks: 1 },
   ];
 
   const handleDragEnd = (notificationId: number) => {
@@ -98,7 +87,7 @@ export default function HomePage() {
               <View>
                 <Text style={styles.subjectName}>{subject.name}</Text>
                 <Text style={styles.subjectTasks}>
-                  Cantidad de Tareas ({subject.taskCount}/{subject.totalTasks})
+                  Cantidad de Tareas ({subject.doneTasks}/{subject.totalTasks})
                 </Text>
               </View>
               <Text style={styles.chevron}>&gt;</Text>

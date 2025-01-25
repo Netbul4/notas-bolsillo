@@ -2,7 +2,6 @@ export interface Task {
   id: string;
   title: string;
   subject: string;
-  tag: string;
   description: string;
   imageUrl: string;
 }
@@ -10,4 +9,6 @@ export interface Task {
 export interface Subject {
   id: string;
   name: string;
+  doneTasks: number;
+  totalTasks: number;
 }
