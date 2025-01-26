@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -28,12 +28,14 @@ export default function HomePage() {
     { id: 1, message: "Tienes 1 tarea pendiente", subject: "Matematicas" },
   ]);
 
-  const subjects: Subject[] = [
-    { id: "1", name: "Matematica", doneTasks: 0, totalTasks: 4 },
-    { id: "2", name: "Fisica", doneTasks: 0, totalTasks: 4 },
-    { id: "3", name: "Lenguas", doneTasks: 0, totalTasks: 2 },
-    { id: "4", name: "Computacion", doneTasks: 0, totalTasks: 1 },
-  ];
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:3000/api/courses')
+      .then(response => response.json())
+      .then(data => setSubjects(data))
+      .catch(error => console.error('Error fetching subjects:', error));
+  }, []);
 
   const handleDragEnd = (notificationId: number) => {
     setNotifications((prev) =>
@@ -77,17 +79,17 @@ export default function HomePage() {
         <Text style={styles.sectionHeader}>Materias</Text>
         {subjects.map((subject) => (
           <TouchableOpacity
-            key={subject.id}
+            key={subject.course_id}
             onPress={() => {
-              navigateToSubjectTasks(subject.name);
+              navigateToSubjectTasks(subject.course_name);
             }}
             style={styles.subject}
           >
             <View style={styles.subjectContent}>
               <View>
-                <Text style={styles.subjectName}>{subject.name}</Text>
+                <Text style={styles.subjectName}>{subject.course_name}</Text>
                 <Text style={styles.subjectTasks}>
-                  Cantidad de Tareas ({subject.doneTasks}/{subject.totalTasks})
+                  Cantidad de Tareas ({subject.done_tasks}/{subject.total_tasks})
                 </Text>
               </View>
               <Text style={styles.chevron}>&gt;</Text>

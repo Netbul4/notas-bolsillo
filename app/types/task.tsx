@@ -7,8 +7,9 @@ export interface Task {
 }
 
 export interface Subject {
-  id: string;
-  name: string;
-  doneTasks: number;
-  totalTasks: number;
+  course_id: number;
+  course_name: string;
+  teacher_name: string;
+  done_tasks: string;
+  total_tasks: string;
 }
