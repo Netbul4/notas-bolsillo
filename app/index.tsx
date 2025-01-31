@@ -12,7 +12,12 @@ const Stack = createNativeStackNavigator();
 
 export default function Index() {
   return (
-    <Stack.Navigator initialRouteName="StudentMain">
+    <Stack.Navigator initialRouteName="Login">
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="StudentMain"
         component={StudentMain}
