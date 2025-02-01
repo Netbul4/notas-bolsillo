@@ -9,12 +9,86 @@ import {
   TextInput,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const API_URL = "http://127.0.0.1:3000/api";
 
 export default function Login() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const clearErrorMessage = () => {
+    setErrorMessage("");
+  };
+
+  const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const login = async (email, password) => {
+    try {
+      const response = await api.post("/login", { email, password });
+      await AsyncStorage.setItem("token", response.data.token);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  };
+
+  const register = async (name, email, password, role) => {
+    try {
+      const response = await api.post("/register", {
+        name,
+        email,
+        password,
+        role,
+      });
+      await AsyncStorage.setItem("token", response.data.token);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      setErrorMessage(""); // Limpiar cualquier error previo
+      const response = await login(form.email, form.password);
+      navigation.navigate("StudentMain");
+    } catch (error) {
+      console.error("Error de inicio de sesión:", error);
+      let message;
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        // Si el error tiene una estructura específica del backend
+        message = error.response.data.message;
+      } else if (error.message) {
+        // Si es un error de JavaScript estándar
+        message = error.message;
+      } else {
+        // Mensaje genérico si no podemos determinar el error específico
+        message =
+          "Ocurrió un error durante el inicio de sesión. Por favor, intenta de nuevo.";
+      }
+      setErrorMessage(message);
+
+      // Configurar el temporizador para limpiar el mensaje después de 5 segundos
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000); // 5000 milisegundos = 5 segundos
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#e8ecf4" }}>
       <KeyboardAwareScrollView style={styles.container}>
@@ -30,9 +104,7 @@ export default function Login() {
             Promedio <Text style={{ color: "#075eec" }}>Perfecto</Text>
           </Text>
 
-          <Text style={styles.subtitle}>
-            Inicia sesion para continuar.
-          </Text>
+          <Text style={styles.subtitle}>Inicia sesion para continuar.</Text>
         </View>
 
         <View style={styles.form}>
@@ -45,6 +117,7 @@ export default function Login() {
               clearButtonMode="while-editing"
               keyboardType="email-address"
               onChangeText={(email) => setForm({ ...form, email })}
+              onFocus={clearErrorMessage}
               placeholder="john@example.com"
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
@@ -59,6 +132,7 @@ export default function Login() {
               autoCorrect={false}
               clearButtonMode="while-editing"
               onChangeText={(password) => setForm({ ...form, password })}
+              onFocus={clearErrorMessage}
               placeholder="********"
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
@@ -70,7 +144,7 @@ export default function Login() {
           <View style={styles.formAction}>
             <TouchableOpacity
               onPress={() => {
-                // handle onPress
+                handleLogin();
               }}
             >
               <View style={styles.btn}>
@@ -99,6 +173,7 @@ export default function Login() {
           <Text style={{ textDecorationLine: "underline" }}>Registrarse</Text>
         </Text>
       </TouchableOpacity>
+      <Text style={styles.formError}>{errorMessage}</Text>
     </SafeAreaView>
   );
 }
@@ -149,6 +224,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#075eec",
+    textAlign: "center",
+  },
+  formError: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#ff0000",
     textAlign: "center",
   },
   formFooter: {
