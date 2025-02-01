@@ -6,6 +6,7 @@ import {
   Image,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
   TextInput,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -20,6 +21,7 @@ export default function Login() {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const clearErrorMessage = () => {
     setErrorMessage("");
@@ -58,6 +60,11 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
+    setIsLoading(true);
+
+    // Espera 2 segundos antes de ejecutar la lógica de login
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     try {
       setErrorMessage(""); // Limpiar cualquier error previo
       const response = await login(form.email, form.password);
@@ -70,22 +77,20 @@ export default function Login() {
         error.response.data &&
         error.response.data.message
       ) {
-        // Si el error tiene una estructura específica del backend
         message = error.response.data.message;
       } else if (error.message) {
-        // Si es un error de JavaScript estándar
         message = error.message;
       } else {
-        // Mensaje genérico si no podemos determinar el error específico
         message =
           "Ocurrió un error durante el inicio de sesión. Por favor, intenta de nuevo.";
       }
       setErrorMessage(message);
 
-      // Configurar el temporizador para limpiar el mensaje después de 5 segundos
       setTimeout(() => {
         setErrorMessage("");
-      }, 5000); // 5000 milisegundos = 5 segundos
+      }, 5000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -108,58 +113,52 @@ export default function Login() {
         </View>
 
         <View style={styles.form}>
-          <View style={styles.input}>
-            <Text style={styles.inputLabel}>Correo electrónico</Text>
-
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              clearButtonMode="while-editing"
-              keyboardType="email-address"
-              onChangeText={(email) => setForm({ ...form, email })}
-              onFocus={clearErrorMessage}
-              placeholder="john@example.com"
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
-              value={form.email}
-            />
-          </View>
-
-          <View style={styles.input}>
-            <Text style={styles.inputLabel}>Contraseña</Text>
-
-            <TextInput
-              autoCorrect={false}
-              clearButtonMode="while-editing"
-              onChangeText={(password) => setForm({ ...form, password })}
-              onFocus={clearErrorMessage}
-              placeholder="********"
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
-              secureTextEntry={true}
-              value={form.password}
-            />
-          </View>
-
-          <View style={styles.formAction}>
-            <TouchableOpacity
-              onPress={() => {
-                handleLogin();
-              }}
-            >
-              <View style={styles.btn}>
-                <Text style={styles.btnText}>Iniciar Sesión</Text>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#075eec" />
+            </View>
+          ) : (
+            <>
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>Correo electrónico</Text>
+                <TextInput
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  clearButtonMode="while-editing"
+                  keyboardType="email-address"
+                  onChangeText={(email) => setForm({ ...form, email })}
+                  onFocus={clearErrorMessage}
+                  placeholder="john@example.com"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  value={form.email}
+                />
               </View>
-            </TouchableOpacity>
-          </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              // handle link
-            }}
-          >
-            <Text style={styles.formLink}>Olvidaste tu contraseña?</Text>
-          </TouchableOpacity>
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>Contraseña</Text>
+                <TextInput
+                  autoCorrect={false}
+                  clearButtonMode="while-editing"
+                  onChangeText={(password) => setForm({ ...form, password })}
+                  onFocus={clearErrorMessage}
+                  placeholder="********"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  secureTextEntry={true}
+                  value={form.password}
+                />
+              </View>
+
+              <View style={styles.formAction}>
+                <TouchableOpacity onPress={handleLogin}>
+                  <View style={styles.btn}>
+                    <Text style={styles.btnText}>Iniciar Sesión</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
         </View>
       </KeyboardAwareScrollView>
 
@@ -279,5 +278,11 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     fontWeight: "600",
     color: "#fff",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 200,
   },
 });
